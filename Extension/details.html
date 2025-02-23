@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Article Content</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Article Content</h1>
+  <div id="content"></div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const content = urlParams.get("content");
+
+    document.getElementById("content").innerText = decodeURIComponent(content);
+  </script>
+</body>
+</html>
