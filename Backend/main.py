@@ -23,6 +23,7 @@ class TextData(BaseModel):
 async def analyze_text(data: TextData):
     text = data.text
     article_data = preprocess.get_article(html=text)
+    print(article_data)
     return article_data
 
 

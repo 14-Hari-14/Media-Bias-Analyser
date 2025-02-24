@@ -11,6 +11,7 @@ def get_article(html=None,url=''):
         article.download()
     article.parse()
     article.nlp()
+    print(article.summary)
     return {
         'title': article.title,
         'text': article.text,
