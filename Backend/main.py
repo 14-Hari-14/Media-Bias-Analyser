@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
+import preprocess
 
 app = FastAPI()
 
@@ -21,13 +22,8 @@ class TextData(BaseModel):
 @app.post("/analyze")
 async def analyze_text(data: TextData):
     text = data.text
-    print("Received text:", text)
-    
-    return {
-        "status": "success",
-        "message": "Text received successfully.",
-        "bias_report": "neutral"  
-    }
+    article_data = preprocess.get_article(html=text)
+    return article_data
 
 
 if __name__ == "__main__":

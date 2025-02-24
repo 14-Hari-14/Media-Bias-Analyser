@@ -22,7 +22,7 @@ document.getElementById("analyzeButton").addEventListener("click", async () => {
         console.log(biasReport);
   
         // Display the result in the popup
-        document.getElementById("result").innerText = `Bias: ${biasReport.bias_report}`;
+        document.getElementById("result").innerText = `Bias: ${biasReport.summary}`;
   
         // Show the "Read More" button
         const readMoreLink = document.getElementById("readMore");

@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "extractContent") {
       console.log("Message received in content script"); 
 
-      const content = document.body.innerText.trim();
+      const content = document.body.innerHTML.trim();
       console.log("Extracted content:", content);
   
       // Send the content back to the popup script
