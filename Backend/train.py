@@ -41,20 +41,16 @@ def get_data():
         print("Error: File 'raw_labels_SG1.csv' not found.")
         return None
     
-    # Limit data for testing (remove in production)
     data = data[:100]
     
-    # Assuming get_tokens is imported or defined
     try:
         data['tokens'] = data['text'].apply(get_tokens)
     except Exception as e:
         print(f"Error in tokenization: {e}")
         return None
     
-    # Convert labels
     data.loc[data['label_bias'] == 'Non-biased', 'type'] = 'Non-biased'
     
-    # Select columns
     columns = ['tokens', 'type']
     data = data[columns]
     
@@ -63,42 +59,31 @@ def get_data():
     return data
 
 def train_model():
-    # Load and preprocess data
     data = get_data()
-    if data is None:
-        return None, None
     
-    # Prepare data
     X = data['tokens'].tolist()
     y = data['type'].tolist()
     
-    # Split data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Encode labels
     label_encoder = LabelEncoder()
     y_train_encoded = label_encoder.fit_transform(y_train)
     y_test_encoded = label_encoder.transform(y_test)
     
-    # Load tokenizer and model
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     num_labels = len(label_encoder.classes_)
     
-    # Prepare datasets
     train_dataset = TextDataset(X_train, y_train_encoded, tokenizer)
     test_dataset = TextDataset(X_test, y_test_encoded, tokenizer)
     
-    # DataLoaders
     train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=8, shuffle=False)
     
-    # Model configuration
     model = BertForSequenceClassification.from_pretrained(
         'bert-base-uncased', 
         num_labels=num_labels
     )
     
-    # Move model to GPU if available
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     

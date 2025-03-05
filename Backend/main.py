@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
-import preprocess
+
+import preprocess, classify
 
 app = FastAPI()
 
@@ -23,7 +24,10 @@ class TextData(BaseModel):
 async def analyze_text(data: TextData):
     text = data.text
     article_data = preprocess.get_article(html=text)
-    print(article_data)
+    tokens = preprocess.get_tokens(article_data['text'])
+    predicted_class = classify.classify_text(tokens)
+    article_data['predicted_class'] = predicted_class
+    print(predicted_class)
     return article_data
 
 

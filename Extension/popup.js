@@ -34,6 +34,9 @@ document.getElementById("analyzeButton").addEventListener("click", async () => {
           const readMoreLink = document.getElementById("readMore");
           readMoreLink.href = `details.html?content=${encodeURIComponent(content)}`;
           readMoreLink.style.display = "block";
+
+          const predicted_class = document.getElementById("result");
+          result.innerText = biasReport.predicted_class;
       }
   });
 });
