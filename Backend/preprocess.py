@@ -1,6 +1,5 @@
 from newspaper import Article
 from transformers import BertTokenizer
-import requests
 
 def get_article(html=None,url=''):
     article = Article(url)
