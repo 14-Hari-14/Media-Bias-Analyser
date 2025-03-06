@@ -24,7 +24,7 @@ document.getElementById("analyzeButton").addEventListener("click", async () => {
           console.log("Bias report from backend:", biasReport);
 
           // Send the summary text back to the content script
-          chrome.tabs.sendMessage(tab.id, { action: "updatePage", summary: biasReport.summary }, (response) => {
+          chrome.tabs.sendMessage(tab.id, { action: "updateSummary", summary: biasReport.summary }, (response) => {
               if (response && response.status === "success") {
                   console.log("Page updated successfully");
               }
@@ -35,8 +35,16 @@ document.getElementById("analyzeButton").addEventListener("click", async () => {
           readMoreLink.href = `details.html?content=${encodeURIComponent(content)}`;
           readMoreLink.style.display = "block";
 
+          // Update the popup with the bias report text
           const predicted_class = document.getElementById("result");
-          result.innerText = biasReport.predicted_class;
+          predicted_class.innerText = biasReport.text;
+
+          // Send the bias report text to the content script to update the webpage
+          chrome.tabs.sendMessage(tab.id, { action: "updateBias", text: biasReport.text }, (response) => {
+              if (response && response.status === "success") {
+                  console.log("Webpage updated with bias report text successfully");
+              }
+          });
       }
   });
 });

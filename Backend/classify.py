@@ -1,110 +1,91 @@
 import torch
-import pandas as pd
-from torch.utils.data import Dataset, DataLoader
+import json
 from transformers import BertTokenizer, BertForSequenceClassification
-from sklearn.preprocessing import LabelEncoder
-from preprocess import get_tokens  # Assuming this is the same preprocessing module
+from preprocess import get_tokens
 
-class TextDataset(Dataset):
-    def __init__(self, texts, tokenizer, max_length=128):
-        # Ensure texts are strings
-        texts = [str(text) for text in texts]
-        
-        # Tokenize inputs
-        self.encodings = tokenizer(
-            texts, 
-            truncation=True, 
-            padding=True, 
-            max_length=max_length, 
-            return_tensors='pt'
-        )
-    
-    def __getitem__(self, idx):
-        item = {key: val[idx] for key, val in self.encodings.items()}
-        return item
-    
-    def __len__(self):
-        return len(self.encodings['input_ids'])
+MODELS_DIR = 'models'
+MODEL_PATH = 'models/model_0.8942.pt'
+CONFIG_PATH = 'models/model_config_0.8942.json'
 
-def load_model(model_path, num_labels):
-    # Initialize model with the same configuration as during training
+def load_model_config():
+    try:
+        with open(CONFIG_PATH, 'r') as f:
+            config = json.load(f)
+        return config
+    except FileNotFoundError:
+        print(f"Error: Config file not found at {CONFIG_PATH}")
+        return {'num_labels': 4, 'label_mapping': {}}
+
+def classify_text(texts):
+    config = load_model_config()
+    num_labels = config['num_labels']
+    label_mapping = config['label_mapping']
+    
+    print(f"Preprocessing {len(texts)} texts...")
+    tokenized_texts = [get_tokens(text) for text in texts]
+    
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    
+    print("Tokenizing texts...")
+    encodings = tokenizer(
+        tokenized_texts,
+        is_split_into_words=True,  # This tells the tokenizer the input is already tokenized
+        padding=True,
+        truncation=True,
+        max_length=128,
+        return_tensors='pt'
+    )
+    
+    # Load the model
+    print(f"Loading model from {MODEL_PATH}...")
     model = BertForSequenceClassification.from_pretrained(
         'bert-base-uncased', 
         num_labels=num_labels
     )
+
+    model.load_state_dict(torch.load(MODEL_PATH))
     
-    # Load the saved state dictionary
-    model.load_state_dict(torch.load(model_path))
-    
-    # Move to GPU if available
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = model.to(device)
-    
-    # Set to evaluation mode
+    print(f"Using device: {device}")
+    model.to(device)
     model.eval()
     
-    return model, device
-
-def classify_new_data(model_path, new_data):
-    # Preprocess new data (apply tokenization)
-    new_data = [str(text) for text in new_data]
-    new_tokens = [get_tokens(text) for text in new_data]
+    # Process in batches
+    batch_size = 8
+    all_preds = []
     
-    # Load tokenizer
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    
-    # Recreate label encoder (you might want to save/load this separately in a real scenario)
-    label_encoder = LabelEncoder()
-    label_encoder.fit(['Non-biased'])  # Add all original labels here
-    num_labels = len(label_encoder.classes_)
-    
-    # Create dataset
-    new_dataset = TextDataset(new_tokens, tokenizer)
-    new_loader = DataLoader(new_dataset, batch_size=8, shuffle=False)
-    
-    # Load model
-    model, device = load_model(model_path, num_labels)
-    
-    # Perform classification
-    all_predictions = []
-    
+    print("Making predictions...")
     with torch.no_grad():
-        for batch in new_loader:
-            # Move batch to device
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
+        for i in range(0, len(tokenized_texts), batch_size):
+            # Get batch
+            batch_input_ids = encodings['input_ids'][i:i+batch_size].to(device)
+            batch_attention_mask = encodings['attention_mask'][i:i+batch_size].to(device)
             
-            # Get model outputs
-            outputs = model(input_ids, attention_mask=attention_mask)
+            outputs = model(
+                batch_input_ids,
+                attention_mask=batch_attention_mask
+            )
             
-            # Get predictions
             preds = torch.argmax(outputs.logits, dim=1)
-            
-            # Convert to numpy and extend results
-            all_predictions.extend(preds.cpu().numpy())
-    
-    # Decode predictions back to original labels
-    decoded_predictions = label_encoder.inverse_transform(all_predictions)
-    
-    return decoded_predictions
+            all_preds.extend(preds.cpu().numpy())
 
-# Example usage
-if __name__ == '__main__':
-    # Path to your saved model (modify this to match your saved model's filename)
-    model_path = 'models/model_0.xxxx.pt'
+    print("Mapping predictions to labels...")
+    # Convert keys to strings since JSON serialization turns them into strings
+    label_mapping = {int(k): v for k, v in label_mapping.items()}
+    all_preds = [label_mapping.get(int(pred), f"Unknown-{pred}") for pred in all_preds]
     
-    # New data to classify
-    new_texts = [
-        "Your first text to classify",
-        "Another text to classify",
-        "Yet another example text"
+    print("Classification complete!")    
+    return all_preds
+
+
+if __name__ == '__main__':
+    example_texts = [
+        "This is a completely neutral statement without any bias.",
+        "Women are not good at tech jobs and should stick to nurturing roles.",
+        "All people deserve equal treatment regardless of their background."
     ]
     
-    # Perform classification
-    results = classify_new_data(model_path, new_texts)
+    predictions = classify_text(example_texts)
     
-    # Print results
-    for text, prediction in zip(new_texts, results):
-        print(f"Text: {text}")
-        print(f"Predicted Label: {prediction}")
-        print("---")
+    for text, pred in zip(example_texts, predictions):
+        print(f"Text: {text[:50]}... | Prediction: {pred}")

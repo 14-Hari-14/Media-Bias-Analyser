@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import uvicorn
 
 import preprocess, classify
+import re
 
 app = FastAPI()
 
@@ -24,10 +25,11 @@ class TextData(BaseModel):
 async def analyze_text(data: TextData):
     text = data.text
     article_data = preprocess.get_article(html=text)
-    tokens = preprocess.get_tokens(article_data['text'])
-    predicted_class = classify.classify_text(tokens)
-    article_data['predicted_class'] = predicted_class
-    print(predicted_class)
+    article_text = article_data['text']
+    sentences = [sentence for sentence in re.split(r'[.\n]', article_text) if sentence.strip()]
+    classify_text = classify.classify_text(sentences)
+    sentences_with_bias = [[sentence, bias] for sentence, bias in zip(sentences, classify_text)]
+    article_data['text'] = sentences_with_bias
     return article_data
 
 

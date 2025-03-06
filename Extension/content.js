@@ -11,7 +11,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       // Send the content back to the popup script
       sendResponse({ content: content });
-  } else if (request.action === "updatePage") {
+  } else if (request.action === "updateSummary") {
       // Handle the summary text from the popup script
       const summary = request.summary;
 
