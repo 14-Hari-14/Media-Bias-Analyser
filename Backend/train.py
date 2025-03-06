@@ -2,8 +2,8 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer, BertForSequenceClassification
-from torch.optim import AdamW
-from sklearn.model_selection import train_test_split
+from torch.optim import AdamW # type: ignore
+from sklearn.model_selection import train_test_split # type: ignore
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import f1_score
 
@@ -40,8 +40,6 @@ def get_data():
     except FileNotFoundError:
         print("Error: File 'raw_labels_SG1.csv' not found.")
         return None
-    
-    data = data[:100]
     
     try:
         data['tokens'] = data['text'].apply(get_tokens)
