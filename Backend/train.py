@@ -13,10 +13,10 @@ from preprocess import TextDataset, get_tokens
 
 load_dotenv()
 DATA_PATH = os.getenv('DATA_PATH')
+NUM_EPOCHS = int(os.getenv('NUM_EPOCHS'))
 
-def get_data():
-    data = pd.read_csv(DATA_PATH, sep=';')[:100]
-    
+def get_data(source=DATA_PATH):
+    data = pd.read_csv(source, sep=';')
     try:
         data['tokens'] = data['text'].apply(get_tokens)
     except Exception as e:
@@ -27,9 +27,9 @@ def get_data():
     
     columns = ['tokens', 'type']
     data = data[columns]
+    data = data.dropna()
     
     print("Data loaded")
-    print(data.head())
     return data
 
 def train_model():    
@@ -38,7 +38,14 @@ def train_model():
     X = data['tokens'].tolist()
     y = data['type'].tolist()
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    if input("Use a subset of the data for testing? (y/n): ").lower() == 'y':
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    else:
+        X_train = X
+        y_train = y
+        test_dataset = get_data(os.getenv('TEST_DATA_PATH'))
+        X_test = test_dataset['tokens'].tolist()
+        y_test = test_dataset['type'].tolist()
     
     label_encoder = LabelEncoder()
     y_train_encoded = label_encoder.fit_transform(y_train)
@@ -60,19 +67,30 @@ def train_model():
         'bert-base-uncased', 
         num_labels=num_labels
     )
+    if input("Load model from disk? (y/n): ").lower() == 'y':
+        model_path = os.getenv('MODEL_PATH')
+        model_conf = os.getenv('CONFIG_PATH')
+        print(f"Loading model from path {model_path}")
+        model.load_state_dict(torch.load(model_path))
+        with open(model_conf, 'r') as f:
+            config = json.load(f)
+            num_labels = config['num_labels']
+            label_mapping = config['label_mapping']
+    else:
+        print("Training a new model")
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     
     # Optimizer
-    optimizer = AdamW(model.parameters(), lr=2e-3)
+    optimizer = AdamW(model.parameters(), lr=2e-3,weight_decay=2e-3)
     
     # Training loop
     model.train()
-    for epoch in range(3):
+    for epoch in range(NUM_EPOCHS):
+        print(f"Epoch {epoch + 1}")
         for batch in train_loader:
             optimizer.zero_grad()
-            
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['labels'].to(device)
@@ -86,6 +104,7 @@ def train_model():
             loss = outputs.loss
             loss.backward()
             optimizer.step()
+        print(f"Loss: {loss.item()}")
     
     # Evaluation
     model.eval()
@@ -110,7 +129,9 @@ def train_model():
     # Calculate F1 score
     f1 = f1_score(all_labels, all_preds, average='weighted')
     print(f"F1 score: {f1}")
-    
+    accuracy = sum([1 for i, j in zip(all_labels, all_preds) if i == j]) / len(all_labels)
+    print(f"Accuracy: {accuracy}")
+
     # Save additional model metadata in a config file
     config = {
         'num_labels': num_labels,

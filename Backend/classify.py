@@ -9,6 +9,7 @@ load_dotenv()
 MODELS_DIR = os.getenv('MODELS_DIR')
 MODEL_PATH = os.getenv('MODEL_PATH')
 CONFIG_PATH = os.getenv('CONFIG_PATH')
+
 def load_model_config():
     try:
         with open(CONFIG_PATH, 'r') as f:
