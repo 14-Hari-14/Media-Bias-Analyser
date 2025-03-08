@@ -1,12 +1,14 @@
 import torch
 import json
+import os
+from dotenv import load_dotenv
 from transformers import BertTokenizer, BertForSequenceClassification
 from preprocess import get_tokens
 
-MODELS_DIR = 'models'
-MODEL_PATH = 'models/model_0.8942.pt'
-CONFIG_PATH = 'models/model_config_0.8942.json'
-
+load_dotenv()
+MODELS_DIR = os.getenv('MODELS_DIR')
+MODEL_PATH = os.getenv('MODEL_PATH')
+CONFIG_PATH = os.getenv('CONFIG_PATH')
 def load_model_config():
     try:
         with open(CONFIG_PATH, 'r') as f:

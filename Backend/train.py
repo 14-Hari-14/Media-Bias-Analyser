@@ -1,19 +1,21 @@
 import pandas as pd
 import torch
-import os
 import json
+import os
+from dotenv import load_dotenv
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.optim import AdamW
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import f1_score
-
 from preprocess import TextDataset, get_tokens
 
+load_dotenv()
+DATA_PATH = os.getenv('DATA_PATH')
 
 def get_data():
-    data = pd.read_csv('raw_labels_SG1.csv', sep=';')[:70]
+    data = pd.read_csv(DATA_PATH, sep=';')[:100]
     
     try:
         data['tokens'] = data['text'].apply(get_tokens)
