@@ -32,7 +32,7 @@ document.getElementById("analyzeButton").addEventListener("click", async () => {
 
           // Show the "Read More" button
           const readMoreLink = document.getElementById("readMore");
-          readMoreLink.href = `details.html?content=${encodeURIComponent(content)}`;
+          readMoreLink.href = `../Website/details.html?content=${encodeURIComponent(content)}`;
           readMoreLink.style.display = "block";
 
           // Update the popup with the bias report text
