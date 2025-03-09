@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&family=Poppins:wght@400;900&display=swap");
+
 * {
   margin: 0;
   padding: 0;
@@ -11,9 +12,8 @@ body {
   color: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: center; /*everything in the center*/
+  min-height: 100vh; 
 }
 
 header {
@@ -26,28 +26,34 @@ header {
   color: white;
   width: 100%;
 }
+
 header h1 {
   font-family: "Josefin Sans", sans-serif;
   font-size: 1.5rem;
   display: flex;
   flex-direction: column;
 }
+
 header nav ul {
   display: flex;
   list-style: none;
   gap: 3em;
 }
+
 header nav ul li {
   margin-left: 20px;
 }
+
 header nav ul li a {
   text-decoration: none;
   color: white;
   font-size: 16px;
 }
+
 header nav ul li a:hover {
   color: #f1c40f;
 }
+
 header nav ul li a img {
   width: 30px;
   height: 30px;
@@ -55,20 +61,42 @@ header nav ul li a img {
 }
 
 main {
-  margin-top: 5%;
+  margin-top: 150px; /*take the input bar up and down*/
 }
-main h1 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
+.heroInputSection {
+  gap: 12px;
   justify-content: center;
+  display: flex;
+  align-items: center;
 }
-main h1 span {
-  color: #FFF;
-  text-align: center;
-  font-family: Poppins;
-  font-size: 6.5rem;
-  font-style: normal;
-  font-weight: 900;
-  line-height: 100%;
-}/*# sourceMappingURL=index.css.map */
+
+.linkInput {
+  border-radius: 6px;
+  border: 1px solid red;
+  width: 400px;
+  height: 38px;
+  padding: 9px 13px;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.10), 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  min-width: 150px;
+  max-width: 400px;
+  flex-grow: 1;
+}
+
+.submitButton {
+  background-color: black;
+  color: #FFFFFF;
+  width: 183px;
+  height: 38px;
+  border-radius: 6px;
+  padding: 9px 13px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 2px solid green;
+}
+
+.inputDescription{
+  margin-top: 20px;
+  margin-right: 15px;
+  max-width: 400px;
+}
