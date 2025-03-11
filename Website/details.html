@@ -24,26 +24,14 @@
       </ul>
     </nav>
   </header>
-
   <main>
     <form id="articleLinkForm" class="heroInputSection">
       <input aria-label="Add link to article" class="linkInput" type="text" placeholder="eg. www.cheese.com" required />
-      <button type="submit" class="submitButton">Add Link</button>
+      <button type="submit" class="submitButton">Analyze Bias</button>
     </form>
+    <div id="resultContainer" class="resultSection"></div>
   </main>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => { // Make sure that the input submits only after the DOM is fully loaded
-      document.getElementById("articleLinkForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-        // Get the input value
-        const input = document.querySelector(".linkInput");
-        const link = input.value;
-
-        console.log(link);
-      });
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 
 </html>
