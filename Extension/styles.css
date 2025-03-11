@@ -1,28 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&display=swap');
+
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: Poppins, sans-serif;
+    font-weight: 700;
     padding: 10px;
     width: 300px;
-  }
-  
-  #analyzeButton {
-    padding: 10px;
-    background-color: #007bff;
+    background: rgb(2,0,36);
+    background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 0%, rgba(0,0,0,1) 100%);
     color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  #analyzeButton:hover {
-    background-color: #0056b3;
-  }
-  
-  #result {
-    margin-top: 10px;
-  }
-  
-  #readMore {
-    display: block;
-    margin-top: 10px;
-    color: #007bff;
-    text-decoration: none;
-  }
+    backdrop-filter: blur(10px);
+}
+
+#popup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+#analyzeButton {
+  padding: 10px 15px;
+  margin: 5em 0em;
+  background-color: rgb(69, 0, 255);
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+  font-weight: 700;
+}
+
+#analyzeButton:hover {
+  background-color: #0056b3;
+}
+
+#result {
+  margin-top: 10px;
+}
+
+#readMore {
+  display: block;
+  margin-top: 10px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+h1{
+  text-align: center;
+}

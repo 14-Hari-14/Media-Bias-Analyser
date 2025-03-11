@@ -76,3 +76,17 @@ main{
     }
 
 }
+
+.about{
+    width: 100vw;
+    padding: 0 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+    h1{
+        font-size: 3rem;
+        font-weight: 900;
+    }
+}

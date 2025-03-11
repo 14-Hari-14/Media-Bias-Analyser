@@ -1,5 +1,3 @@
-// content.js
-
 // Listen for messages from the popup script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "extractContent") {

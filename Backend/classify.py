@@ -6,7 +6,6 @@ from transformers import BertTokenizer, BertForSequenceClassification
 from preprocess import get_tokens
 
 load_dotenv()
-MODELS_DIR = os.getenv('MODELS_DIR')
 MODEL_PATH = os.getenv('MODEL_PATH')
 CONFIG_PATH = os.getenv('CONFIG_PATH')
 
