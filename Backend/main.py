@@ -19,12 +19,18 @@ app.add_middleware(
 
 class TextData(BaseModel):
     text: str
+    url: bool
 
 
 @app.post("/analyze")
 async def analyze_text(data: TextData):
     text = data.text
-    article_data = preprocess.get_article(html=text)
+    
+    if data.url:
+        article_data = preprocess.get_article(url=text)
+    else:
+        article_data = preprocess.get_article(html=text)
+
     article_text = article_data['text']
     sentences = [sentence for sentence in re.split(r'[.\n]', article_text) if sentence.strip()]
     classify_text = classify.classify_text(sentences)
@@ -41,7 +47,6 @@ async def analyze_text(data: TextData):
 
     print(article_data)
     return article_data
-
 
 
 if __name__ == "__main__":

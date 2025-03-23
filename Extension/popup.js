@@ -11,7 +11,7 @@ document.getElementById("analyzeButton").addEventListener("click", async () => {
               headers: {
                   "Content-Type": "application/json",
               },
-              body: JSON.stringify({ text: content }),
+              body: JSON.stringify({ text: content, url: false }),
           });
 
           const biasReport = await result.json();
