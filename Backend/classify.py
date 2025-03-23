@@ -45,7 +45,8 @@ def classify_text(texts):
         num_labels=num_labels
     )
 
-    model.load_state_dict(torch.load(MODEL_PATH))
+
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu')))
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
@@ -82,9 +83,8 @@ def classify_text(texts):
 
 if __name__ == '__main__':
     example_texts = [
-        "This is a completely neutral statement without any bias.",
-        "Women are not good at tech jobs and should stick to nurturing roles.",
-        "All people deserve equal treatment regardless of their background."
+        "Capitalism functions to separate workers from the means of production.",
+        "The government should reduce tariffs and allow firms more freedom in the market",
     ]
     
     predictions = classify_text(example_texts)

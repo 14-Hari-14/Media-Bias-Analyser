@@ -77,6 +77,9 @@ main{
 
 }
 
+
+// About section
+
 .about{
     width: 100vw;
     padding: 0 20%;
@@ -88,5 +91,39 @@ main{
     h1{
         font-size: 3rem;
         font-weight: 900;
+    }
+}
+
+// Analyzer section
+
+.analyzer{
+    .heroInputSection{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2em;
+        .linkInput{
+            background-color: transparent;
+            border: 1px solid red;
+            font-size: 1rem;
+            color: white;
+            padding: 1em 2em;
+            width: 30vw;
+            height: 100%;
+            outline: red;
+        }
+        .submitButton{
+            cursor: pointer;
+            height: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background-color: red;
+            padding: 15px;
+            img{
+                width: 30px;
+                height: auto;
+            }
+        }
     }
 }

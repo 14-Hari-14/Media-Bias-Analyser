@@ -17,25 +17,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const sentences = summary.split('\n');
       console.log(sentences);
 
-      // Get the initial HTML content
-      let text = document.body.innerHTML;
-
       // Function to highlight sentences in red
-      const highlightSentences = (content, sentences) => {
-        // Escape special characters in sentences to treat them as literal text in regex
-        const escapedSentences = sentences.map(sentence => 
-          sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        );
-        
-        // Create a single regex pattern that matches any of the sentences
-        const pattern = new RegExp(`(${escapedSentences.join('|')})`, 'g');
-        
-        // Replace all matching sentences with wrapped versions
-        return content.replace(pattern, '<span style="background-color: yellow;">$1</span>');
+      const highlightSentences = (sentences) => {
+        sentences.forEach(sentence => {
+          // Escape special characters in sentences to treat them as literal text in regex
+          const escapedSentence = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          
+          // Create a regex pattern that matches the sentence
+          const pattern = new RegExp(`(${escapedSentence})`, 'g');
+          
+          // Find all text nodes and replace matching sentences with wrapped versions
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+          let node;
+          while (node = walker.nextNode()) {
+            if (node.nodeValue.trim()) {
+              const parent = node.parentNode;
+              const newNodeValue = node.nodeValue.replace(pattern, '<span style="background-color: yellow;">$1</span>');
+              if (newNodeValue !== node.nodeValue) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newNodeValue;
+                while (tempDiv.firstChild) {
+                  parent.insertBefore(tempDiv.firstChild, node);
+                }
+                parent.removeChild(node);
+              }
+            }
+          }
+        });
       };
 
       // Apply the highlighting
-      document.body.innerHTML = highlightSentences(text, sentences);
+      highlightSentences(sentences);
 
       // Send a response back (optional)
       sendResponse({ status: "success" });
