@@ -46,6 +46,9 @@ async def analyze_text(data: TextData):
     article_data['center'] = center_biased_sentences
 
     print(article_data)
+
+    article_data.pop("movies")
+    article_data.pop("text")
     return article_data
 
 
