@@ -94,6 +94,9 @@ media-bias-analyzer/
 │
 ├── Backend/                  # FastAPI backend code
 │   ├── main.py               # FastAPI application
+│   ├── preprocess.py
+│   ├── train.ipynb
+│   ├── classify.py
 │   └── requirements.txt      # Python dependencies
 │
 ├── Extension/                # Firefox extension code
