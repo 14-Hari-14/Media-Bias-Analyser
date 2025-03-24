@@ -153,3 +153,19 @@ main{
         }
     }
 }
+
+.details{
+    margin-top: 7em;
+    overflow-y: scroll;
+    padding: 5em 10%;
+    -ms-overflow-style: none;
+    scrollbar-width: none; 
+    .detail-item{
+        margin-bottom: 2em;
+    }
+    .details-img{
+        border: 1px solid red;
+        width: 300px;
+        height: auto;
+    }
+}

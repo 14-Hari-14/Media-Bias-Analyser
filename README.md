@@ -92,17 +92,29 @@ The extension will now be loaded and ready to use.
 ```
 media-bias-analyzer/
 │
-├── backend/                  # FastAPI backend code
+├── Backend/                  # FastAPI backend code
 │   ├── main.py               # FastAPI application
 │   └── requirements.txt      # Python dependencies
 │
-├── extension/                # Firefox extension code
+├── Extension/                # Firefox extension code
 │   ├── manifest.json         # Extension metadata
 │   ├── content.js            # Content script to extract page content
 │   ├── popup.html            # Popup UI
 │   ├── popup.js              # Popup logic
 │   ├── styles.css            # Styles for the popup
 │   └── icons/                # Extension icons
+│
+├── Website/
+│   ├── index.html
+│   ├── about.html
+│   ├── analyze.html
+│   ├── details.html
+│   ├── details.js
+│   ├── analyze.js
+│   └── styles/
+│       ├── index.css
+│       ├── index.css.map
+│       └── index.scss
 │
 └── README.md                 # This file
 ```

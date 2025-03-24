@@ -1,48 +1,44 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Add an event listener to the form for the "submit" event
-    document.getElementById("articleLinkForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
+document.addEventListener('DOMContentLoaded', (event) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const details = JSON.parse(urlParams.get('details'));
 
-        // Get the input value (link entered by the user)
-        const input = document.querySelector(".linkInput");
-        const link = input.value;
-        console.log("Link entered:", link);
+    const mainElement = document.querySelector('main.details');
 
-        // Show loading state
-        const resultContainer = document.getElementById("resultContainer");
-        resultContainer.innerHTML = '<div class="loading">Analyzing article...</div>';
+    if (details) {
+        for (const [key, value] of Object.entries(details)) {
+            if (!value) continue;
 
-        try {
-            // Send the link directly to your backend API instead of using chrome API
-            const backendUrl = "http://127.0.0.1:8000/analyze-link";
-            const response = await fetch(backendUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ url: link }),
-            });
+            const detailElement = document.createElement('div');
+            detailElement.classList.add('detail-item');
 
-            if (!response.ok) {
-                throw new Error(`Server responded with status: ${response.status}`);
+            const keyElement = document.createElement('h2');
+            keyElement.textContent = key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+            detailElement.appendChild(keyElement);
+
+            if (key === 'top_image') {
+                const imgElement = document.createElement('img');
+                imgElement.src = value;
+                imgElement.classList.add('details-img');
+                detailElement.appendChild(imgElement);
+            } else if (['left', 'right', 'center'].includes(key)) {
+                const listElement = document.createElement('ul');
+                value.forEach(sentence => {
+                    if (sentence.length >= 20) {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = sentence;
+                        listElement.appendChild(listItem);
+                    }
+                });
+                detailElement.appendChild(listElement);
+            } else {
+                const valueElement = document.createElement('p');
+                valueElement.textContent = value;
+                detailElement.appendChild(valueElement);
             }
 
-            const biasReport = await response.json();
-
-            // Display the results on the page
-            resultContainer.innerHTML = `
-          <div class="result-card">
-            <h3>Bias Analysis Results</h3>
-            <p class="bias-result">${biasReport.text}</p>
-            <div class="summary">${biasReport.summary}</div>
-            <a href="details.html?content=${encodeURIComponent(JSON.stringify(biasReport))}" class="details-link">View Detailed Report</a>
-          </div>
-        `;
-
-        } catch (error) {
-            // Handle errors
-            console.error("Error:", error);
-            resultContainer.innerHTML = `<div class="error">An error occurred: ${error.message}</div>`;
+            mainElement.appendChild(detailElement);
         }
-    });
+    } else {
+        mainElement.textContent = 'No details available.';
+    }
 });

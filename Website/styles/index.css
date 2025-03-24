@@ -143,4 +143,20 @@ main h1 span {
 .analyzer .heroInputSection .submitButton img {
   width: 30px;
   height: auto;
+}
+
+.details {
+  margin-top: 7em;
+  overflow-y: scroll;
+  padding: 5em 10%;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.details .detail-item {
+  margin-bottom: 2em;
+}
+.details .details-img {
+  border: 1px solid red;
+  width: 300px;
+  height: auto;
 }/*# sourceMappingURL=index.css.map */

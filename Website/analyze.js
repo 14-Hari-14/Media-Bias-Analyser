@@ -37,5 +37,6 @@ async function handleFormSubmit(event) {
 }
 
 function displayResult(result) {
-    resultContainer.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+    const params = new URLSearchParams({ details: JSON.stringify(result) });
+    window.location.href = `details.html?${params.toString()}`;
 }
