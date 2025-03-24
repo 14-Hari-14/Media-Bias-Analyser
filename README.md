@@ -115,6 +115,12 @@ media-bias-analyzer/
 │       ├── index.css
 │       ├── index.css.map
 │       └── index.scss
+│  
+├── docs/
+│
+├── .gitignore
+│
+├── LICENSE
 │
 └── README.md                 # This file
 ```
