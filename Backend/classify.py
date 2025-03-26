@@ -18,6 +18,10 @@ def load_model_config():
         print(f"Error: Config file not found at {CONFIG_PATH}")
         return {'num_labels': 4, 'label_mapping': {}}
 
+
+def temperature_scaled_softmax(logits,temp=2):
+    return torch.softmax(logits/temp,dim=1)
+
 def classify_text(texts):
     config = load_model_config()
     num_labels = config['num_labels']
@@ -71,8 +75,8 @@ def classify_text(texts):
                 attention_mask=batch_attention_mask
             )
             
-            probabilities = torch.softmax(outputs.logits, dim=1)
-            preds = torch.argmax(outputs.logits, dim=1)
+            probabilities = temperature_scaled_softmax(outputs.logits)
+            preds = torch.argmax(probabilities, dim=1)
             confidences = probabilities[torch.arange(len(preds)), preds]
             all_confidences.extend(confidences.cpu().numpy())
             all_preds.extend(preds.cpu().numpy())
@@ -90,6 +94,7 @@ if __name__ == '__main__':
     example_texts = [
         "Capitalism functions to separate workers from the means of production.",
         "The government should reduce tariffs and allow firms more freedom in the market",
+        "Immigration is a national crisis"
     ]
     
     predictions,confidences = classify_text(example_texts)
