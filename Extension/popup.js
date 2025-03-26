@@ -3,6 +3,26 @@ spinner.className = 'spinner';
 spinner.innerHTML = '<div class="loader"></div>';
 const analyzebtn = document.getElementById("analyzeButton")
 
+function displayResult(result, resultContainer) {
+    try {
+        // Saving data with a unique key
+        const uniqueKey = `result_${Date.now()}`;
+        if (chrome && chrome.storage && chrome.storage.local) {
+            chrome.storage.local.set({ [uniqueKey]: result }, () => {
+                console.log("Data saved with key:", uniqueKey);
+            });
+            console.log("Result stored in local storage");
+        } else {
+            console.warn("chrome.storage is not available. Falling back to localStorage.");
+            localStorage.setItem(uniqueKey, JSON.stringify(result));
+            console.log("Result stored in localStorage");
+        }
+    } catch (error) {
+        console.error('Error storing result in session storage:', error);
+        resultContainer.innerHTML = '<p class="error">Failed to store the result. Please try again.</p>';
+    }
+}
+
 analyzebtn.addEventListener("click", async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -36,9 +56,9 @@ analyzebtn.addEventListener("click", async () => {
                 const BASE_URL = "https://media-bias.netlify.app/";
                 const LOCAL_URL = "http://127.0.0.1:5500/Website/";
 
+                displayResult(biasReport, resultContainer);
                 const readMoreLink = document.getElementById("readMore");
-                const params = new URLSearchParams({ details: JSON.stringify(biasReport) });
-                readMoreLink.href = `${BASE_URL}details.html?${params.toString()}`;
+                readMoreLink.href = `${LOCAL_URL}details.html`;
                 readMoreLink.style.display = "block";
                 
                 // Update the popup with the bias report text

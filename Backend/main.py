@@ -33,14 +33,13 @@ async def analyze_text(data: TextData):
 
     article_text = article_data['text']
     sentences = [sentence for sentence in re.split(r'[.\n]', article_text) if sentence.strip()]
-    classify_text = classify.classify_text(sentences)
-    sentences_with_bias = [[sentence, bias] for sentence, bias in zip(sentences, classify_text)]
+    classify_text, confidence = classify.classify_text(sentences)
+    print(classify_text, confidence, sep="\n")
     
-    left_biased_sentences = [sentence for sentence, bias in zip(sentences, classify_text) if bias == 'left']
-    right_biased_sentences = [sentence for sentence, bias in zip(sentences, classify_text) if bias == 'right']
-    center_biased_sentences = [sentence for sentence, bias in zip(sentences, classify_text) if bias == 'center']
+    left_biased_sentences = [f"{sentence} <span class='conf'>Confidence: {conf:.2f}</span>" for sentence, bias, conf in zip(sentences, classify_text, confidence) if bias == 'left']
+    right_biased_sentences = [f"{sentence} <span class='conf'>Confidence: {conf:.2f}</span>" for sentence, bias, conf in zip(sentences, classify_text, confidence) if bias == 'right']
+    center_biased_sentences = [f"{sentence} <span class='conf'>Confidence: {conf:.2f}</span>" for sentence, bias, conf in zip(sentences, classify_text, confidence) if bias == 'center']
     
-    article_data['text'] = sentences_with_bias
     article_data['left'] = left_biased_sentences
     article_data['right'] = right_biased_sentences
     article_data['center'] = center_biased_sentences

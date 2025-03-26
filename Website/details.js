@@ -1,8 +1,18 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const details = JSON.parse(urlParams.get('details'));
-
+    let details = JSON.parse(localStorage.getItem('myData'));
     const mainElement = document.querySelector('main.details');
+
+    if (!details) {
+        chrome.storage.local.get("myData", (result) => {
+            if (result.myData) {
+                console.log("Stored value:", result.myData);
+                details = JSON.parse(result.myData);
+                // Do something with parsedData if needed
+            } else {
+                console.error("No data found in chrome.storage.local");
+            }
+        });
+    }
 
     if (details) {
         for (const [key, value] of Object.entries(details)) {
@@ -25,7 +35,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 value.forEach(sentence => {
                     if (sentence.length >= 20) {
                         const listItem = document.createElement('li');
-                        listItem.textContent = sentence;
+                        listItem.innerHTML = sentence;
                         listElement.appendChild(listItem);
                     }
                 });
