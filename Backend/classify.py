@@ -57,6 +57,7 @@ def classify_text(texts):
     # Process in batches
     batch_size = 8
     all_preds = []
+    all_confidences = []
     
     print("Making predictions...")
     with torch.no_grad():
@@ -70,7 +71,10 @@ def classify_text(texts):
                 attention_mask=batch_attention_mask
             )
             
+            probabilities = torch.softmax(outputs.logits, dim=1)
             preds = torch.argmax(outputs.logits, dim=1)
+            confidences = probabilities[torch.arange(len(preds)), preds]
+            all_confidences.extend(confidences.cpu().numpy())
             all_preds.extend(preds.cpu().numpy())
 
     print("Mapping predictions to labels...")
@@ -79,7 +83,7 @@ def classify_text(texts):
     all_preds = [label_mapping.get(int(pred), f"Unknown-{pred}") for pred in all_preds]
     
     print("Classification complete!")    
-    return all_preds
+    return all_preds,all_confidences
 
 
 if __name__ == '__main__':
@@ -88,7 +92,7 @@ if __name__ == '__main__':
         "The government should reduce tariffs and allow firms more freedom in the market",
     ]
     
-    predictions = classify_text(example_texts)
+    predictions,confidences = classify_text(example_texts)
     
-    for text, pred in zip(example_texts, predictions):
-        print(f"Text: {text[:50]}... | Prediction: {pred}")
+    for text, pred,conf in zip(example_texts, predictions,confidences):
+        print(f"Text: {text[:50]}... | Prediction: {pred} |... | Confidence: {conf}")
