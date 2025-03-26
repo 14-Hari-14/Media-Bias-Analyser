@@ -25,6 +25,7 @@ def classify_text(texts):
     
     print(f"Preprocessing {len(texts)} texts...")
     tokenized_texts = [get_tokens(text) for text in texts]
+    print("Preprocessing completed")
     
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     

@@ -1,5 +1,5 @@
 from newspaper import Article
-from transformers import BertTokenizer
+from transformers import BertTokenizerFast
 
 import torch
 from torch.utils.data import Dataset
@@ -49,7 +49,23 @@ def get_article(html=None,url=''):
         'summary': article.summary
     }
 
+import nltk
+from nltk.tokenize import word_tokenize
+
+# Download necessary NLTK resources (run this once)
+nltk.download('punkt', quiet=True)
+
 def get_tokens(text):
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    tokens = tokenizer.tokenize(text)
+    """
+    Tokenize text using NLTK's word_tokenize method.
+    
+    Args:
+        text (str): Input text to tokenize
+    
+    Returns:
+        list: List of tokens
+    """
+    # Tokenize the text
+    tokens = word_tokenize(text)
+    
     return tokens
