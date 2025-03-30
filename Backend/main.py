@@ -25,6 +25,7 @@ class TextData(BaseModel):
 @app.post("/analyze")
 async def analyze_text(data: TextData):
     text = data.text
+    print("Backend received: ", data.text, data.url)
     
     if data.url:
         article_data = preprocess.get_article(url=text)
@@ -43,12 +44,17 @@ async def analyze_text(data: TextData):
     article_data['left'] = left_biased_sentences
     article_data['right'] = right_biased_sentences
     article_data['center'] = center_biased_sentences
-
     print(article_data)
 
     article_data.pop("movies")
     article_data.pop("text")
-    return article_data
+    
+    return { 
+        "status_code": 200,
+        "status": "success",
+        "result": article_data
+        }
+
 
 
 if __name__ == "__main__":

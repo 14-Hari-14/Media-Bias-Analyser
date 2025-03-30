@@ -19,7 +19,7 @@ def load_model_config():
         return {'num_labels': 4, 'label_mapping': {}}
 
 
-def temperature_scaled_softmax(logits,temp=2):
+def temperature_scaled_softmax(logits,temp=3):
     return torch.softmax(logits/temp,dim=1)
 
 def classify_text(texts):

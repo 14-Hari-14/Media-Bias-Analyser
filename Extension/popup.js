@@ -56,28 +56,28 @@ analyzebtn.addEventListener("click", async () => {
                 const BASE_URL = "https://media-bias.netlify.app/";
                 const LOCAL_URL = "http://127.0.0.1:5500/Website/";
 
-                displayResult(biasReport, resultContainer);
+                displayResult(biasReport.result, resultContainer);
                 const readMoreLink = document.getElementById("readMore");
                 readMoreLink.href = `${LOCAL_URL}details.html`;
                 readMoreLink.style.display = "block";
                 
                 // Update the popup with the bias report text
                 resultContainer.innerHTML = `
-                    <h3>Left Bias: ${biasReport.left.length} lines</h3>
-                    <h3>Right Bias: ${biasReport.right.length} lines</h3>
-                    <h3>Center Bias: ${biasReport.center.length} lines</h3>
+                    <h3>Left Bias: ${biasReport.result.left.length} lines</h3>
+                    <h3>Right Bias: ${biasReport.result.right.length} lines</h3>
+                    <h3>Center Bias: ${biasReport.result.center.length} lines</h3>
                 `;
 
-                console.log(`Left Bias: ${biasReport.left.length} lines`);
-                console.log(`Right Bias: ${biasReport.right.length} lines`);
-                console.log(`Center Bias: ${biasReport.center.length} lines`);
+                console.log(`Left Bias: ${biasReport.result.left.length} lines`);
+                console.log(`Right Bias: ${biasReport.result.right.length} lines`);
+                console.log(`Center Bias: ${biasReport.result.center.length} lines`);
 
-                // Send the bias report text to the content script to update the webpage
-                chrome.tabs.sendMessage(tab.id, { action: "updateBias", text: biasReport.text }, (response) => {
-                    if (response && response.status === "success") {
-                        console.log("Webpage updated with bias report text successfully");
-                    }
-                });
+                // // Send the bias report text to the content script to update the webpage
+                // chrome.tabs.sendMessage(tab.id, { action: "updateBias", text: biasReport.text }, (response) => {
+                //     if (response && response.status === "success") {
+                //         console.log("Webpage updated with bias report text successfully");
+                //     }
+                // });
 
         } catch (error) {
             console.error('Error:', error);
