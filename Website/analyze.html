@@ -29,10 +29,24 @@
     <form id="articleLinkForm" class="heroInputSection">
       <input aria-label="Add link to article" class="linkInput" type="text" placeholder="eg. www.cheese.com" required />
       <button type="submit" class="submitButton">
-      <img src="https://img.icons8.com/ios-filled/50/FFFFFF/search--v1.png" alt="Search">
+        <img src="https://img.icons8.com/ios-filled/50/FFFFFF/search--v1.png" alt="Search">
       </button>
     </form>
-    <div id="resultContainer" class="resultSection"></div>
+    <div id="resultContainer" class="resultSection">
+      <!-- Add these elements -->
+      <div class="result-card">
+        <h3>Article Summary</h3>
+        <div id="summary" class="result-text"></div>
+      </div>
+      <div class="result-card">
+        <h3>Political Leaning</h3>
+        <div id="leaning" class="result-text"></div>
+      </div>
+      <div class="result-card">
+        <h3>Analysis</h3>
+        <div id="reasoning" class="result-text"></div>
+      </div>
+    </div>
   </main>
 </body>
 

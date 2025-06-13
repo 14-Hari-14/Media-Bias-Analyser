@@ -1,61 +1,63 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
-
-import preprocess, classify
-import re
+from llm_call import analyze_text_with_gemini
+import preprocess
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.middleware import SlowAPIMiddleware
 
 app = FastAPI()
 
+# Initialize rate limiter (in-memory)
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
+
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  
+    allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 class TextData(BaseModel):
     text: str
     url: bool
 
+class AnalysisResult(BaseModel):
+    status_code: int
+    status: str
+    analysis: str
+    meta: dict
 
 @app.post("/analyze")
-async def analyze_text(data: TextData):
-    text = data.text
-    print("Backend received: ", data.text, data.url)
+@limiter.limit("60/minute")  # Basic in-memory rate limiting
+async def analyze_text(request: Request, data: TextData):
+    print("Backend received:", data.text, "Is URL:", data.url)
     
+    # Get article text
     if data.url:
-        article_data = preprocess.get_article(url=text)
+        article_data = preprocess.get_article(url=data.text)
     else:
-        article_data = preprocess.get_article(html=text)
+        article_data = preprocess.get_article(html=data.text)
 
-    article_text = article_data['text']
-    sentences = [sentence for sentence in re.split(r'[.\n]', article_text) if sentence.strip()]
-    classify_text, confidence = classify.classify_text(sentences)
-    print(classify_text, confidence, sep="\n")
+    # Analyze with Gemini
+    analysis = analyze_text_with_gemini(article_data['text'])
     
-    left_biased_sentences = [f"{sentence} <span class='conf'>Confidence: {conf:.2f}</span>" for sentence, bias, conf in zip(sentences, classify_text, confidence) if bias == 'left']
-    right_biased_sentences = [f"{sentence} <span class='conf'>Confidence: {conf:.2f}</span>" for sentence, bias, conf in zip(sentences, classify_text, confidence) if bias == 'right']
-    center_biased_sentences = [f"{sentence} <span class='conf'>Confidence: {conf:.2f}</span>" for sentence, bias, conf in zip(sentences, classify_text, confidence) if bias == 'center']
+    # Prepare response
+    article_data.pop("movies", None)
+    article_data.pop("text", None)
     
-    article_data['left'] = left_biased_sentences
-    article_data['right'] = right_biased_sentences
-    article_data['center'] = center_biased_sentences
-    print(article_data)
-
-    article_data.pop("movies")
-    article_data.pop("text")
-    
-    return { 
-        "status_code": 200,
-        "status": "success",
-        "result": article_data
-        }
-
-
+    return AnalysisResult(
+        status_code=200,
+        status="success",
+        analysis=analysis,
+        meta=article_data
+    )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
