@@ -23,8 +23,8 @@ def analyze_text_with_gemini(text: str) -> str:
             "system",
             "You are a senior political analyst with 20+ years of experience in media bias detection. "
             "Your task is to: "
-            "1. Summarize the text in 3-4 sentences. "
-            "2. Classify its political leaning as [Left/Center/Right]. "
+            "1. Summarize the text. The summary should be written in such a way that without even reading the original text, the reader should know the main ideas and key data points of the article. "
+            "2. Classify its political leaning as Left/Center/Right."
             "3. Explain your reasoning in 2-3 sentences, highlighting key phrases or tones."
         ),
         ("human", text),

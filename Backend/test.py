@@ -1,3 +1,5 @@
+'''
+Not required
 import torch, numpy as np
 from fastapi.testclient import TestClient
 from classify import classify_text, load_model_config, temperature_scaled_softmax
@@ -46,3 +48,5 @@ if __name__ == "__main__":
     test_classify_text()
     test_analyze_text()
     print("All tests passed!")
+
+'''

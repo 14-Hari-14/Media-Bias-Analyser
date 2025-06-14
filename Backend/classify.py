@@ -1,3 +1,6 @@
+'''
+Not required
+
 import torch
 import json
 import os
@@ -101,3 +104,4 @@ if __name__ == '__main__':
     
     for text, pred,conf in zip(example_texts, predictions,confidences):
         print(f"Text: {text[:50]}... | Prediction: {pred} |... | Confidence: {conf}")
+'''

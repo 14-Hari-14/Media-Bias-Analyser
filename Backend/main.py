@@ -46,7 +46,7 @@ async def analyze_text(request: Request, data: TextData):
         article_data = preprocess.get_article(html=data.text)
 
     # Analyze with Gemini
-    analysis = analyze_text_with_gemini(article_data['text'])
+    analysis = analyze_text_with_gemini(data.text)
     
     # Prepare response
     article_data.pop("movies", None)
