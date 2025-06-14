@@ -35,18 +35,35 @@ class AnalysisResult(BaseModel):
     meta: dict
 
 @app.post("/analyze")
-@limiter.limit("60/minute")  # Basic in-memory rate limiting
+@limiter.limit("60/minute")
 async def analyze_text(request: Request, data: TextData):
-    print("Backend received:", data.text, "Is URL:", data.url)
+    print("Received request: URL =", data.url)
+    print("Received text length:", len(data.text))
+    print("Received text sample:", data.text[:200])
     
     # Get article text
     if data.url:
         article_data = preprocess.get_article(url=data.text)
+        text = article_data.get('text', '')
     else:
-        article_data = preprocess.get_article(html=data.text)
-
+        text = data.text  # New preprocessing for raw text
+        article_data = {'title': '', 'authors': [], 'publish_date': None, 'top_image': '', 'movies': []}
+    
+    print("Processed text length:", len(text))
+    print("Processed text sample:", text[:200])
+    
+    if not text or len(text.strip()) < 50:
+        print("Validation failed: Empty or too short text")
+        return AnalysisResult(
+            status_code=400,
+            status="error",
+            analysis="Please provide the text you wish me to analyze. I need the text to summarize it, classify its political leaning, and explain my reasoning.",
+            meta=article_data
+        )
+    
     # Analyze with Gemini
-    analysis = analyze_text_with_gemini(data.text)
+    analysis = analyze_text_with_gemini(text)
+    print("LLM analysis:", analysis[:200])
     
     # Prepare response
     article_data.pop("movies", None)
