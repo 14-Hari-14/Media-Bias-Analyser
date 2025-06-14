@@ -21,7 +21,7 @@ Before you begin, ensure you have the following installed:
 Clone this repository to your local machine using Git:
 
 ```bash
-git clone https://github.com/math-lover31415/Media-Bias.git
+git clone https://github.com/14-Hari-14/Media-Bias.git
 cd Media-Bias
 ```
 
@@ -69,6 +69,7 @@ pip install -r requirements.txt
 Start the FastAPI backend server:
 
 ```bash
+cd Backend
 uvicorn main:app --reload
 ```
 
