@@ -1,157 +1,147 @@
-Media Bias Analyzer
-The Media Bias Analyzer is a tool for detecting media bias in news articles, comprising a Firefox browser extension and a web application. The browser extension extracts text from a webpage and sends it to a FastAPI backend, which uses a large language model (LLM) API to generate a bias report, including a summary, political leaning, and detailed reasoning. The web application allows users to input article URLs directly for analysis. Both components display the bias report, with a "Read More" link to a detailed analysis page served locally.
+# Media Bias Analyzer
 
-Prerequisites
+This project is a browser extension that analyzes media bias on web pages. It extracts the content of the current webpage, sends it to a FastAPI backend for analysis using a BERT-based machine learning model, and displays the bias report in the extension popup. A "Read More" button redirects to a detailed analysis page.
+
+---
+
+## **Prerequisites**
+
 Before you begin, ensure you have the following installed:
 
-Python 3.8+
-Firefox Browser (for the extension)
-Git (optional, for cloning the repository)
-Sass (for compiling Website/styles/index.scss to index.css)
-Install globally: npm install -g sass
+- **Python 3.8+**
+- **Firefox Browser**
+- **Git** (optional, for cloning the repository)
 
-Setup Instructions
+---
 
-1. Clone the Repository
-   Clone this repository to your local machine using Git:
-   git clone https://github.com/math-lover31415/Media-Bias.git
-   cd Media-Bias
+## **Setup Instructions**
 
-2. Set Up a Python Virtual Environment
-   Create a virtual environment to isolate backend dependencies:
-   python3 -m venv venv
+### **1. Clone the Repository**
+
+Clone this repository to your local machine using Git:
+
+```bash
+git clone https://github.com/math-lover31415/Media-Bias.git
+cd Media-Bias
+```
+
+---
+
+### **2. Set Up a Python Virtual Environment**
+
+Create a virtual environment to isolate the project dependencies:
+
+```bash
+python3 -m venv venv
+```
 
 or
+
+```bash
 python -m venv venv
+```
 
 Activate the virtual environment:
 
-On macOS/Linux:source venv/bin/activate
+- **On macOS/Linux**:
+  ```bash
+  source venv/bin/activate
+  ```
+- **On Windows**:
+  ```bash
+  venv\Scripts\activate
+  ```
 
-On Windows:venv\Scripts\activate
+---
 
-3. Install Python Dependencies
-   Install the required Python packages for the FastAPI backend:
-   pip install -r Backend/requirements.txt
+### **3. Install Python Dependencies**
 
-4. Compile Frontend Styles
-   Compile the Sass stylesheet to CSS for the web application:
-   sass Website/styles/index.scss Website/styles/index.css
+Install the required Python packages from `requirements.txt`:
 
-5. Run the FastAPI Backend
-   Start the FastAPI backend server:
-   uvicorn Backend.main:app --reload
+```bash
+pip install -r requirements.txt
+```
 
-The backend will be available at http://localhost:8000. Verify by visiting http://localhost:8000/docs.
+---
 
-6. Serve the Web Application
-   The web application (Website/) is static and requires a local HTTP server due to CORS restrictions. Run the following command in the project root:
-   python -m http.server 8080
+### **4. Run the FastAPI Backend**
 
-Access the web application at http://localhost:8080/Website/index.html.
+Start the FastAPI backend server:
 
-7. Load the Extension in Firefox
+```bash
+uvicorn main:app --reload
+```
 
-Open Firefox and navigate to about:debugging#/runtime/this-firefox.
-Click This Firefox in the left sidebar.
-Under Temporary Extensions, click Load Temporary Add-on.
-Select the manifest.json file from the Extension/ directory.
+The backend will be available at `http://127.0.0.1:8000`.
 
-The extension will be loaded and ready to use.
+---
 
-8. Test the Project
-   Web Application
+### **5. Load the Extension in Firefox**
 
-Open http://localhost:8080/Website/index.html in your browser.
-Navigate to the analysis page (analyze.html).
-Enter a news article URL (e.g., Sample Article).
-Submit the URL to view the bias report, including summary, political leaning, and reasoning.
-Click Read More to access the detailed analysis page (details.html).
+1. Open Firefox and go to `about:debugging`.
+2. In the left sidebar, click on **This Firefox**.
+3. Under **Temporary Extensions**, click **Load Temporary Add-on**.
+4. Select the `manifest.json` file from the `media-bias-analyzer` directory.
 
-Browser Extension
+The extension will now be loaded and ready to use.
 
-Ensure the backend is running (http://localhost:8000).
-Open a news article in Firefox (e.g., Sample Article).
-Click the extension icon in the toolbar.
-Click the Analyze Bias button in the popup.
-The extension extracts the page content, sends it to the backend for LLM analysis, and displays the bias report (summary, political leaning, and detailed reasoning).
-Click Read More to view the full analysis at http://localhost:8080/Website/details.html.
-If errors occur (e.g., "Error: undefined"), open the console (Ctrl+Shift+J) and check logs from popup.js and content.js. Ensure content.js is updated and the backend is running.
+---
 
-Project Structure
-Media-Bias/
+### **6. Test the Extension**
+
+1. Open a news article in Firefox (e.g., [Sample Article](https://www.bbc.com/news/articles/cy8pejl63qqo)).
+2. Click the extension icon in the toolbar.
+3. Click the **Analyze Bias** button in the popup.
+4. The extension will extract the content, send it to the backend, and display the bias report.
+5. Click the **Read More** button to view the full content on a separate page.
+
+---
+
+## **Project Structure**
+
+```
+media-bias-analyzer/
 │
-├── Backend/ # FastAPI backend code
-│ ├── classify.py # Legacy BERT classification (optional)
-│ ├── llm_call.py # LLM API integration
-│ ├── main.py # FastAPI application
-│ ├── preprocess.py # Text preprocessing
-│ ├── requirements.txt # Python dependencies
-│ ├── test.py # Backend tests
-│ ├── train.ipynb # Legacy BERT training notebook
-│ └── venv/ # Virtual environment (ignored)
+├── Backend/                  # FastAPI backend code
+│   ├── main.py               # FastAPI application
+│   ├── preprocess.py
+│   ├── train.ipynb
+│   ├── classify.py
+│   └── requirements.txt      # Python dependencies
 │
-├── Website/ # Web application frontend
-│ ├── about.html # About page
-│ ├── analyze.html # Analysis input page
-│ ├── analyze.js # Analysis page logic
-│ ├── assets/ # Static assets (e.g., background.png)
-│ ├── details.html # Detailed analysis page
-│ ├── details.js # Detailed page logic
-│ ├── index.html # Homepage
-│ └── styles/ # CSS and Sass styles
-│ ├── index.css # Compiled CSS
-│ ├── index.css.map # Source map
-│ └── index.scss # Source Sass
+├── Extension/                # Firefox extension code
+│   ├── manifest.json         # Extension metadata
+│   ├── content.js            # Content script to extract page content
+│   ├── popup.html            # Popup UI
+│   ├── popup.js              # Popup logic
+│   ├── styles.css            # Styles for the popup
+│   └── icons/                # Extension icons
 │
-├── Extension/ # Firefox browser extension
-│ ├── content.js # Content script for page extraction and API calls
-│ ├── icons/ # Extension icons
-│ ├── manifest.json # Extension metadata
-│ ├── popup.html # Popup UI
-│ ├── popup.js # Popup logic
-│ └── styles.css # Popup styles
+├── Website/
+│   ├── index.html
+│   ├── about.html
+│   ├── analyze.html
+│   ├── details.html
+│   ├── details.js
+│   ├── analyze.js
+│   └── styles/
+│       ├── index.css
+│       ├── index.css.map
+│       └── index.scss
 │
-├── docs/ # Documentation
-│ ├── Abstract.docx # Project abstract
-│ ├── Literature Review (docs) .pdf
-│ ├── Literature Review (ppt).pdf
-│ ├── Papers/ # Research papers
-│ ├── SDD.pdf # Software Design Document
-│ └── SRS.pdf # Software Requirements Specification
+├── docs/
 │
-├── .gitignore # Git ignore rules
-├── LICENSE # MIT License
-└── README.md # Project documentation
+├── .gitignore
+│
+├── LICENSE
+│
+└── README.md                 # This file
+```
 
-Troubleshooting
+---
 
-Extension Error: "Error: undefined"
-Cause: Likely due to an outdated content.js not making the API call.
-Fix: Ensure Extension/content.js matches the version that calls http://localhost:8000/analyze. Check console logs (Ctrl+Shift+J) for Response from content.js: { content: ... } (indicates old content.js) vs. { status, data }.
+## **License**
 
-Backend Not Responding
-Symptoms: "Failed to analyze content" or network errors in console.
-Fix: Verify the backend is running (http://localhost:8000/docs). Test the API with curl -X POST http://localhost:8000/analyze -H "Content-Type: application/json" -d '{"text":"test content","url":false}'.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-CORS Issues
-Symptoms: "Cross-Origin Request Blocked" in console.
-Fix: Ensure manifest.json includes "host_permissions": ["http://localhost:8000/*"].
-
-Storage Errors
-Symptoms: "Failed to store result" in popup.
-Fix: Confirm manifest.json includes "storage" permission.
-
-No Results Displayed
-Fix: Check the API response format in content.js logs (API response: ...). Ensure it matches { analysis: "Summary: ...\n\n**Political Leaning:** ...\n\n**Reasoning:** ..." }.
-
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-Notes
-
-The backend uses an LLM API for bias analysis, replacing the previous BERT-based model. Configure API keys in Backend/llm_call.py (e.g., via .env, ignored by .gitignore).
-The web application requires a local HTTP server to avoid CORS issues with analyze.js.
-The browser extension depends on the backend (http://localhost:8000) for analysis. Ensure the backend is running before using the extension.
-For production, deploy the backend to a cloud service (e.g., Heroku) and host the web application on a static file server (e.g., Netlify). Update content.js, analyze.js, and manifest.json to use the deployed API URL.
-The extension and web application exhibit basic Agentic AI behavior, autonomously extracting or accepting content and delegating analysis to the LLM API.
+---
